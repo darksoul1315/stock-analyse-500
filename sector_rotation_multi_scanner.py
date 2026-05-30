@@ -37,6 +37,101 @@ except AttributeError:
 # Define output
 OUTPUT_FILE = "sector_rotation_multi_report.xlsx"
 
+# -------------------------------------------------------------
+# TELEGRAM BOT INTEGRATION MODULE
+# -------------------------------------------------------------
+def load_env_file():
+    """Loads local .env variables into os.environ if it exists."""
+    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+    if os.path.exists(env_path):
+        try:
+            with open(env_path, "r") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        key, val = line.split("=", 1)
+                        os.environ[key.strip()] = val.strip()
+            print("🔑 Environment credentials loaded from .env file.")
+        except Exception as e:
+            print(f"⚠️ Warning: Failed to parse .env file: {e}")
+
+def send_telegram_alerts(text_summary: str, file_path: str = None) -> bool:
+    """
+    Dispatches a formatted Markdown alert and optional file attachment
+    directly to a Telegram chat/bot channel.
+    """
+    # Load credentials
+    token = os.environ.get("TELEGRAM_BOT_TOKEN")
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID")
+    
+    if not token or not chat_id:
+        print("⚠️ Warning: Telegram credentials (TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID) not found. Skipping alert.")
+        return False
+        
+    print("📤 Dispatching Telegram notifications...")
+    
+    # 1. Send Text Summary Alert
+    text_url = f"https://api.telegram.org/bot{token}/sendMessage"
+    payload = {
+        "chat_id": chat_id,
+        "text": text_summary,
+        "parse_mode": "Markdown"
+    }
+    
+    try:
+        req_data = urllib.parse.urlencode(payload).encode("utf-8")
+        req = urllib.request.Request(text_url, data=req_data, method="POST")
+        with urllib.request.urlopen(req, timeout=12) as response:
+            print("   ✅ Text alert sent successfully.")
+    except Exception as e:
+        print(f"   ❌ Failed to send Telegram text alert: {e}")
+        return False
+        
+    # 2. Upload Excel Report file
+    if file_path and os.path.exists(file_path):
+        doc_url = f"https://api.telegram.org/bot{token}/sendDocument"
+        
+        try:
+            # Construct manual multipart/form-data payload in python
+            boundary = "----WebKitFormBoundary7MA4YWxkTrZu0gW"
+            parts = []
+            
+            # Chat ID field
+            parts.append(f"--{boundary}\r\nContent-Disposition: form-data; name=\"chat_id\"\r\n\r\n{chat_id}\r\n")
+            
+            # Document file field
+            file_name = os.path.basename(file_path)
+            parts.append(f"--{boundary}\r\nContent-Disposition: form-data; name=\"document\"; filename=\"{file_name}\"\r\nContent-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\r\n\r\n")
+            
+            # Read binary file content
+            with open(file_path, "rb") as f:
+                file_content = f.read()
+                
+            # Compile multipart raw payload
+            body = bytearray()
+            for part in parts:
+                body.extend(part.encode("utf-8"))
+            body.extend(file_content)
+            body.extend(f"\r\n--{boundary}--\r\n".encode("utf-8"))
+            
+            headers = {
+                "Content-Type": f"multipart/form-data; boundary={boundary}",
+                "Content-Length": str(len(body))
+            }
+            
+            req = urllib.request.Request(doc_url, data=body, headers=headers, method="POST")
+            with urllib.request.urlopen(req, timeout=25) as response:
+                print("   ✅ Excel report uploaded successfully to Telegram.")
+            return True
+        except Exception as e:
+            print(f"   ❌ Failed to upload Excel report to Telegram: {e}")
+            return False
+            
+    return True
+
+# Define output
+OUTPUT_FILE = "sector_rotation_multi_report.xlsx"
+
 # Lexicons for financial sentiment analysis
 POSITIVE_WORDS = {
     'bullish', 'surge', 'jump', 'gain', 'positive', 'profit', 'growth', 'demand', 
@@ -971,6 +1066,57 @@ def main():
             
     wb.save(OUTPUT_FILE)
     
+    # -------------------------------------------------------------
+    # TELEGRAM BOT ALERT NOTIFICATION DISPATCHER
+    # -------------------------------------------------------------
+    try:
+        # 1. Fetch latest data date
+        dt_str = latest_bhav_date.strftime("%d-%b-%Y")
+        
+        # 2. Extract Top 3 RRG sectors
+        top_sectors = sector_rank_df.head(3)
+        sectors_text = ""
+        for idx in range(len(top_sectors)):
+            row = top_sectors.iloc[idx]
+            name = row["Sector Name"]
+            score = row["Rotational Score"]
+            quad = row["RRG Quadrant"]
+            heading = row["Heading"]
+            quad_emoji = "🟢" if quad == "LEADING" else "🔵" if quad == "IMPROVING" else "🟡" if quad == "WEAKENING" else "🔴"
+            sectors_text += f"{idx+1}. {quad_emoji} *{name}* (Score: {score:.1f}) -> {quad} [Heading: {heading:.1f}°]\n"
+            
+        # 3. Extract Top 5 Strong Buy / Buy Stocks
+        strong_buys = daily_df[daily_df["Signal"] == "STRONG BUY"].head(5)
+        if len(strong_buys) < 5:
+            buys = daily_df[daily_df["Signal"] == "BUY"].head(5 - len(strong_buys))
+            strong_buys = pd.concat([strong_buys, buys])
+            
+        stocks_text = ""
+        for idx in range(min(5, len(strong_buys))):
+            row = strong_buys.iloc[idx]
+            ticker = row["Ticker"]
+            close = row["Close"]
+            rsi = row["RSI (14)"]
+            deliv = row["5D Avg Delivery %"]
+            sig = row["Signal"]
+            sig_emoji = "🔥" if sig == "STRONG BUY" else "⚡"
+            stocks_text += f" - {sig_emoji} *{ticker}*: CMP: {close:.1f} | RSI: {rsi:.1f} | 5D Deliv: {deliv * 100:.1f}%\n"
+            
+        text_summary = (
+            f"🔔 *NIFTY 500 ROTATION SCAN COMPLETED* 🔔\n"
+            f"📅 Date: {dt_str}\n\n"
+            f"🚀 *TOP 3 STRONGEST SECTORS (RRG)*\n{sectors_text}\n"
+            f"📈 *TOP 5 STRONGEST SCANNER CANDIDATES*\n{stocks_text}\n"
+            f"📂 *Attached is your updated 5-sheet Sector Rotation Excel Dashboard!*"
+        )
+        
+        # Load environment credentials and trigger notification
+        load_env_file()
+        send_telegram_alerts(text_summary, OUTPUT_FILE)
+        
+    except Exception as telegram_e:
+        print(f"⚠️ Warning: Failed to compile or send Telegram summary: {telegram_e}")
+        
     elapsed = time.time() - start_time
     print("=" * 70)
     print(f"🎉 MASTER REPORT COMPILED SUCCESSFULLY: {OUTPUT_FILE}")
