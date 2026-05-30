@@ -1,0 +1,15 @@
+# Ignore private credentials
+.env
+
+# Ignore compiled python code
+__pycache__/
+*.pyc
+
+# Ignore compiled Excel binary dashboards
+*.xlsx
+
+# Ignore temporary local logs
+*.log
+
+# Ignore macOS system metadata
+.DS_Store
