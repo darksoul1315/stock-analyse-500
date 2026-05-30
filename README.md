@@ -57,78 +57,124 @@ The scanner generates `sector_rotation_multi_report.xlsx` featuring:
 
 ---
 
-## 🛠️ Installation & Setup (Step-by-Step)
+## 🛠️ Step-by-Step Setup Guide (Quick Start / Kaise Use Kare)
 
-### Step 1: Clone the Repository
-Clone the repository to your local system:
+Follow these simple, step-by-step instructions to get the scanner fully running on your system and receiving daily Telegram alerts!
+
+---
+
+### 📋 Prerequisites (System Requirements)
+Before you start, make sure you have:
+1. **Python 3.8+** installed on your computer.
+2. **Terminal** (macOS/Linux) or **Command Prompt/PowerShell** (Windows) open.
+3. A **Telegram** account.
+
+---
+
+### 💻 Step 1: Clone the Repository & Go to Folder
+Clone this repository from GitHub and navigate into the project directory:
 ```bash
+# Clone the repository
 git clone https://github.com/darksoul1315/stock-analyse-500.git
+
+# Enter the project folder
 cd stock-analyse-500
 ```
 
-### Step 2: Install Python Dependencies
-Install the required packages using `requirements.txt`:
+---
+
+### 📦 Step 2: Install Python Libraries (Dependencies)
+Install all required libraries (`pandas`, `numpy`, `yfinance`, and `openpyxl` for Excel generation) in one simple command:
 ```bash
 pip install -r requirements.txt
 ```
-
-### Step 3: Configure Telegram Bot Credentials
-To enable automated alerts, you must create a Telegram bot and configure your credentials:
-
-1. **Create your Bot**:
-   * Open Telegram, search for **`@BotFather`** and start a chat.
-   * Send the `/newbot` command and follow the prompts to choose a name and username.
-   * Copy the **HTTP API Token** provided (e.g., `8760476239:AAEhHYH4...`).
-
-2. **Configure credentials automatically**:
-   * Open Telegram and search for your newly created bot username (e.g., `@darksouls69_bot`).
-   * Press **START** (or send any text message to it).
-   * Run the interactive auto-detector script:
-     ```bash
-     python3 detect_chat_id.py
-     ```
-   * The script will listen for the start message, extract your private **Chat ID**, and automatically create and configure your local `.env` file!
-
-3. **Verify Configuration**:
-   Verify your `.env` contains:
-   ```env
-   TELEGRAM_BOT_TOKEN=your_token_here
-   TELEGRAM_CHAT_ID=your_chat_id_here
-   ```
+*(If you run into permission errors, try `pip install -r requirements.txt --user` or use a python virtual environment)*.
 
 ---
 
-## ⚡ Running & Verifying the Pipeline
+### 🤖 Step 3: Set Up Your Telegram Bot (Alerts Activation)
 
-### 1. Verify Pipeline Integrity
-Run the verification check script to ensure all components (data fetcher, delivery downloader, technical calculators, news sentiment parser, and sector synthesis) execute cleanly:
+To get automated alerts sent directly to your phone, you need a Telegram Bot token and your personal Chat ID. Follow these steps:
+
+#### Part A: Create your Bot in 1 Minute
+1. Open your Telegram app and search for **`@BotFather`** (the official, verified Telegram bot creator).
+2. Click **Start** and send the command:
+   ```text
+   /newbot
+   ```
+3. Enter a friendly Name for your bot (e.g., `My Nifty Scanner`).
+4. Enter a unique Username ending in `_bot` (e.g., `nifty_rotation_69_bot`).
+5. **@BotFather** will reply with a long HTTP API **Token** (looks like `8760476239:AAEhHYH4AM6fZR6wbmCMrWD3Xaewn2fli-U`). **Copy this Token!**
+
+#### Part B: Link your Chat & Get Chat ID Automatically
+1. In Telegram, search for your newly created bot username (e.g., `@nifty_rotation_69_bot`) and click **START** (or send any test message to it). *This is important so the bot has permission to message you!*
+2. Go back to your terminal, open [`.env`](file:///Users/rajeevkumar/Library/CloudStorage/GoogleDrive-kituraj22@gmail.com/My%20Drive/BACKTESTING/open%20intrest/.env) file (if it exists, or create a new file named `.env`) and paste your Bot Token:
+   ```env
+   TELEGRAM_BOT_TOKEN=your_copied_token_here
+   TELEGRAM_CHAT_ID=
+   ```
+3. Run our automated Chat ID detector script in the terminal:
+   ```bash
+   python3 detect_chat_id.py
+   ```
+4. **Boom!** The script will listen to your bot, extract your private **Chat ID**, print it on the screen, and **automatically save it into your `.env` file!** Your `.env` will now look like this:
+   ```env
+   TELEGRAM_BOT_TOKEN=8760476239:AAEhHYH4AM6fZR6wbmCMrWD3Xaewn2fli-U
+   TELEGRAM_CHAT_ID=965499149
+   ```
+
+*(Note: Your `.env` file contains your private keys. It is automatically ignored by Git and will never be pushed to your public GitHub repo, keeping your bot 100% secure).*
+
+---
+
+### 🧪 Step 4: Verify Your Setup & Test Connection
+Before running the full production scanner (which downloads 500 stocks), run this fast verification script to test if the data downloads, technical indicators, and news sentiment systems are fully operational:
 ```bash
 python3 verify_modules.py
 ```
-
-### 2. Run the Scanner manually
-Execute the full production pipeline to compile the workbook and dispatch the Telegram alert:
-```bash
-python3 sector_rotation_multi_scanner.py
-```
+*If everything is correct, you will see a green success message:*
+`🎉 ALL PIPELINES ARE 100% OPERATIONAL, INTEGRATED, AND CORRECT!`
 
 ---
 
-## 📅 Daily Cron Scheduling (macOS Automation)
+### 🚀 Step 5: Run the Scanner Manually
+Run the production script to execute the scanner, build the custom Excel sheets, and send the results to your Telegram chat instantly:
+```bash
+python3 sector_rotation_multi_scanner.py
+```
+* **What happens now?** 
+  * The script will scan all Nifty 500 stocks, calculate technical breadths, parse financial news headlines, and compile the styled `sector_rotation_multi_report.xlsx` sheet.
+  * You will immediately receive a **Telegram message** summarizing the **Top 3 RRG Sectors** and the **Top 5 Breakout Stock Candidates**, along with the **Excel Spreadsheet attached** to view on your mobile or PC!
 
-To automatically run this program daily at **8:45 PM**, you can add it to your macOS `crontab`:
+---
 
-1. Open your terminal and run:
+## 📅 Step 6: Set Up Daily Automatic Runs (8:45 PM Daily)
+
+To automate the script so it runs every single day at **8:45 PM (20:45)** without opening your terminal, configure a daily schedule:
+
+### On macOS / Linux (using `cron`):
+1. Find your system's exact Python 3 path by running:
+   ```bash
+   which python3
+   ```
+   *(Usually it is `/usr/bin/python3` or `/Library/Frameworks/Python.framework/...`)*.
+2. Get the absolute path to your folder by running:
+   ```bash
+   pwd
+   ```
+3. Open your system's cron scheduler configuration:
    ```bash
    crontab -e
    ```
-2. Add the following entry (adjusting the paths to match your local python installation and workspace path):
+4. Press `i` to enter edit mode, and paste the following line at the very bottom (replace `/usr/bin/python3` with your python path and `/path/to/folder` with your absolute folder path):
    ```text
-   45 20 * * * cd "/Users/rajeevkumar/Library/CloudStorage/GoogleDrive-kituraj22@gmail.com/My Drive/BACKTESTING/open intrest" && /usr/bin/python3 sector_rotation_multi_scanner.py >> daily_cron_run.log 2>&1
+   45 20 * * * cd "/path/to/folder" && /usr/bin/python3 sector_rotation_multi_scanner.py >> daily_cron_run.log 2>&1
    ```
-3. Save and close. Output logs and warnings will be saved daily to `daily_cron_run.log`.
+5. Press `Esc` then type `:wq` and press `Enter` to save and exit.
+6. **Done!** The system will now execute the scanner daily at 8:45 PM and save all outputs/warnings to `daily_cron_run.log`.
 
 ---
 
 ## 📜 Disclaimer
-This scanner is for research and educational purposes only. It is not financial advice.
+This quantitative scanner is created solely for research, educational, and backtesting purposes. It does not constitute financial advice, buy/sell recommendations, or market solicitation. Please consult a registered investment advisor before committing capital.
+
