@@ -13,3 +13,7 @@ __pycache__/
 
 # Ignore macOS system metadata
 .DS_Store
+
+# Ignore helper setup scripts
+detect_chat_id.py
+
