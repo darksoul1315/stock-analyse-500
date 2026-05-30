@@ -1,0 +1,59 @@
+🔒 SSL certificate verification bypassed for external API downloads.
+======================================================================
+ 🚀 NIFTY 500 MULTI-TIMEFRAME DELIVERY, SENTIMENT & TREND SCANNER
+======================================================================
+📥 Fetching Nifty 500 list from NSE: https://archives.nseindia.com/content/indices/ind_nifty500list.csv
+📂 Analyzing Nifty 500 industry distributions...
+   Mapping all Nifty 500 constituent stocks to their respective industries...
+✅ Loaded 20 major Nifty 500 sectors comprising 500 stocks.
+📥 Scanning NSE archives for the last 5 active Delivery Bhavcopy reports...
+   ✅ Downloaded active report for: 29-May-2026
+   ✅ Downloaded active report for: 28-May-2026
+   ✅ Downloaded active report for: 27-May-2026
+   ✅ Downloaded active report for: 26-May-2026
+   ✅ Downloaded active report for: 25-May-2026
+📊 Calculating Daily, Weekly, and 5-Day Average Deliveries...
+✅ Delivery volume percentages calculated.
+📥 Downloading 10-year historical prices from Yahoo Finance in robust batches...
+   Downloading batch 1 (100 symbols)...
+   Downloading batch 2 (100 symbols)...
+   Downloading batch 3 (100 symbols)...
+   Downloading batch 4 (100 symbols)...
+   Downloading batch 5 (100 symbols)...
+   Downloading batch 6 (1 symbols)...
+📊 Synthesizing capital-weighted Sector Price Indices...
+✅ Sectors price histories synthesized.
+📰 Fetching real-time Google News headlines & calculating NLP Sentiment scores...
+   Sector: Automobile and Auto Components | Sentiment: BEARISH    (Score: -0.33)
+   Sector: Capital Goods                  | Sentiment: NEUTRAL    (Score: +0.00)
+   Sector: Chemicals                      | Sentiment: BULLISH    (Score: +0.17)
+   Sector: Construction                   | Sentiment: NEUTRAL    (Score: +0.00)
+   Sector: Construction Materials         | Sentiment: BULLISH    (Score: +0.17)
+   Sector: Consumer Durables              | Sentiment: BEARISH    (Score: -0.17)
+   Sector: Consumer Services              | Sentiment: BEARISH    (Score: -0.17)
+   Sector: Diversified                    | Sentiment: BULLISH    (Score: +0.17)
+   Sector: Fast Moving Consumer Goods     | Sentiment: BULLISH    (Score: +0.17)
+   Sector: Financial Services             | Sentiment: NEUTRAL    (Score: +0.00)
+   Sector: Healthcare                     | Sentiment: BEARISH    (Score: -0.17)
+   Sector: Information Technology         | Sentiment: NEUTRAL    (Score: +0.00)
+   Sector: Media Entertainment & Publication | Sentiment: BEARISH    (Score: -0.17)
+   Sector: Metals & Mining                | Sentiment: BULLISH    (Score: +0.56)
+   Sector: Oil Gas & Consumable Fuels     | Sentiment: BEARISH    (Score: -0.22)
+   Sector: Power                          | Sentiment: NEUTRAL    (Score: +0.00)
+   Sector: Realty                         | Sentiment: BEARISH    (Score: -0.17)
+   Sector: Services                       | Sentiment: BEARISH    (Score: -0.33)
+   Sector: Telecommunication              | Sentiment: NEUTRAL    (Score: +0.00)
+   Sector: Textiles                       | Sentiment: NEUTRAL    (Score: +0.00)
+⚡ Executing Multi-Timeframe scans (EMA, RSI, RS Ratios, Multi-Year Extremes)...
+📊 Compiling final Sector Rankings strength index...
+5. Writing output report to sector_rotation_multi_report.xlsx and applying styling...
+======================================================================
+🎉 MASTER REPORT COMPILED SUCCESSFULLY: sector_rotation_multi_report.xlsx
+Time Taken : 105.8 seconds
+Sheets created in workbook:
+  1. 'Daily Scanner'     - Multi-EMA, RSI, RS Nifty/Sector, and Delivery Scanner (Daily)
+  2. 'Weekly Scanner'    - Weekly trend, Weekly EMAs, and Weekly Delivery %
+  3. 'Sector Rankings'   - Aggregated RRG coordinates, technical breadth, & rotational momentum rankings
+  4. 'Sector RRG Trails' - 10-day historical trailing path of RS-Ratio & RS-Momentum coordinates
+  5. 'Sector News Feed'  - Real-time Google News headlines & polarity sentiment scores
+======================================================================

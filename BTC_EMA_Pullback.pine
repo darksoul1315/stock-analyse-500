@@ -1,0 +1,73 @@
+//@version=5
+strategy("BTC High-Probability EMA Pullback", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0.04)
+
+// --- INPUTS ---
+ema50_length = input.int(50, title="15M Pullback EMA Length")
+ema200_1h_length = input.int(200, title="1H Trend Filter EMA Length")
+rsi_length = input.int(14, title="RSI Length")
+rsi_oversold = input.int(38, title="RSI Oversold Level (Longs)")
+rsi_overbought = input.int(62, title="RSI Overbought Level (Shorts)")
+
+sl_pct = input.float(0.5, title="Stop Loss (%)") / 100
+tp_pct = input.float(1.0, title="Take Profit (%)") / 100 // 1:2 Risk-Reward
+
+// --- INDICATORS ---
+ema50_15m = ta.ema(close, ema50_length)
+rsi_15m = ta.rsi(close, rsi_length)
+
+// Multi-Timeframe Trend Filter: 1-Hour EMA 200
+ema200_1h = request.security(syminfo.tickerid, "60", ta.ema(close, ema200_1h_length))
+
+// --- PLOTS ---
+plot(ema50_15m, color=color.blue, linewidth=2, title="15M EMA 50 (Pullback Line)")
+plot(ema200_1h, color=color.orange, linewidth=2, title="1H EMA 200 (Trend Filter)")
+
+// --- STRATEGY CONDITIONS ---
+// Long Setup:
+// 1. Price is above the 1H EMA 200 (Bullish structural bias)
+// 2. Price low touches or goes below the 15M EMA 50 (Pullback mature)
+// 3. RSI is below the oversold threshold
+is_bullish_trend = close > ema200_1h
+is_long_pullback = low <= ema50_15m
+is_long_rsi = rsi_15m < rsi_oversold
+
+long_condition = is_bullish_trend and is_long_pullback and is_long_rsi
+
+// Short Setup:
+// 1. Price is below the 1H EMA 200 (Bearish structural bias)
+// 2. Price high touches or goes above the 15M EMA 50 (Pullback mature)
+// 3. RSI is above the overbought threshold
+is_bearish_trend = close < ema200_1h
+is_short_pullback = high >= ema50_15m
+is_short_rsi = rsi_15m > rsi_overbought
+
+short_condition = is_bearish_trend and is_short_pullback and is_short_rsi
+
+// --- TRADE EXECUTION ---
+var float long_entry_price = na
+var float long_sl_price = na
+var float long_tp_price = na
+
+var float short_entry_price = na
+var float short_sl_price = na
+var float short_tp_price = na
+
+// Manage Long entry & exits
+if (long_condition and strategy.position_size == 0)
+    long_entry_price := close
+    long_sl_price := long_entry_price * (1.0 - sl_pct)
+    long_tp_price := long_entry_price * (1.0 + tp_pct)
+    strategy.entry("Long", strategy.long)
+
+if (strategy.position_size > 0)
+    strategy.exit("Exit Long", "Long", stop=long_sl_price, limit=long_tp_price)
+
+// Manage Short entry & exits
+if (short_condition and strategy.position_size == 0)
+    short_entry_price := close
+    short_sl_price := short_entry_price * (1.0 + sl_pct)
+    short_tp_price := short_entry_price * (1.0 - tp_pct)
+    strategy.entry("Short", strategy.short)
+
+if (strategy.position_size < 0)
+    strategy.exit("Exit Short", "Short", stop=short_sl_price, limit=short_tp_price)
