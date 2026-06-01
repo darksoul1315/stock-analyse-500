@@ -119,8 +119,8 @@ To get automated alerts sent directly to your phone, you need a Telegram Bot tok
    ```
 4. **Boom!** The script will listen to your bot, extract your private **Chat ID**, print it on the screen, and **automatically save it into your `.env` file!** Your `.env` will now look like this:
    ```env
-   TELEGRAM_BOT_TOKEN=8760476239:AAEhHYH4AM6fZR6wbmCMrWD3Xaewn2fli-U
-   TELEGRAM_CHAT_ID=965499149
+   TELEGRAM_BOT_TOKEN=1234567890:ABCDefghIJKLmnopQRSTuvwxYZ123456789
+   TELEGRAM_CHAT_ID=123456789
    ```
 
 *(Note: Your `.env` file contains your private keys. It is automatically ignored by Git and will never be pushed to your public GitHub repo, keeping your bot 100% secure).*
