@@ -7,9 +7,11 @@ __pycache__/
 
 # Ignore compiled Excel binary dashboards
 *.xlsx
+*.parquet
 
 # Ignore temporary local logs
 *.log
+
 
 # Ignore macOS system metadata
 .DS_Store
