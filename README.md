@@ -31,6 +31,13 @@ Ranks all 20 Nifty 500 sectors using a weighted multi-factor scoring model (0 to
 * **Heading Direction** (25% weight) - rewards sectors heading North-East towards the Leading quadrant using a smooth cosine wave: $\max(0, \cos(\text{heading} - 45^\circ)) \times 100$.
 * **5D Average Delivery Volume %** (20% weight).
 
+### 4. Advanced Monte Carlo Returns Simulation
+Vectorized non-parametric joint bootstrapping Monte Carlo simulation for predicting the probability of sector outperformance:
+* **Drift (Momentum Persistence)**: Computes the 30-day average relative return spread between the sector and the benchmark.
+* **Volatility (Risk)**: Evaluates the historical standard deviation of the sector's daily relative spread.
+* **5000-Path Vectorization**: Employs `np.random.normal(loc=drift, scale=std_dev, size=(5000, 30))` to simulate 5000 future market paths over 15 and 30 trading days.
+* **Outperformance Probability (Win Rate)**: Computes the ratio of simulations where the cumulative relative return is strictly positive, translating theoretical risk into a percentage win-rate.
+
 ---
 
 ## 📂 Project Directory Structure
