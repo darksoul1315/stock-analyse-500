@@ -111,7 +111,7 @@ To get automated alerts sent directly to your phone, you need a Telegram Bot tok
    ```
 3. Enter a friendly Name for your bot (e.g., `My Nifty Scanner`).
 4. Enter a unique Username ending in `_bot` (e.g., `nifty_rotation_69_bot`).
-5. **@BotFather** will reply with a long HTTP API **Token** (looks like `8760476239:AAEhHYH4AM6fZR6wbmCMrWD3Xaewn2fli-U`). **Copy this Token!**
+5. **@BotFather** will reply with a long HTTP API **Token** (looks like a long string of letters and numbers). **Copy this Token!**
 
 #### Part B: Link your Chat & Get Chat ID Automatically
 1. In Telegram, search for your newly created bot username (e.g., `@nifty_rotation_69_bot`) and click **START** (or send any test message to it). *This is important so the bot has permission to message you!*
